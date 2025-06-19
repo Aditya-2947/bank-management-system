@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Indian Bank</title>
+    <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <script>
+        // Set initial theme
+        if (!sessionStorage.getItem('theme')) {
+            sessionStorage.setItem('theme', 'light');
+        }
+        document.body.className = sessionStorage.getItem('theme');
+    </script>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <i class="fas fa-university"></i>
+                <h1>Indian Bank</h1>
+            </div>
+            <form id="loginForm">
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="username" placeholder="Username" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" placeholder="Password" required>
+                </div>
+                <div class="remember-forgot">
+                    <label>
+                        <input type="checkbox"> Remember me
+                    </label>
+                    <a href="#">Forgot Password?</a>
+                </div>
+                <button type="button" onclick="login()" class="login-btn">Login</button>
+            </form>
+            <div class="login-footer">
+                <p>Don't have an account? <a href="#">Sign up</a></p>
+            </div>
+            <div class="theme-switcher">
+                <button id="themeToggle" class="theme-btn">
+                    <i class="fas fa-sun"></i>
+                    <span id="themeText">Light Mode</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function login() {
+            var username = document.getElementById('username').value;
+            var password = document.getElementById('password').value;
+
+            if(username === "admin" && password === "admin123") {
+                sessionStorage.setItem('isLoggedIn', 'true');
+                window.location.href = "index.html";
+            } else {
+                alert("Invalid username or password! Please use admin/admin123");
+            }
+        }
+
+        // Theme switcher functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const themeText = document.getElementById('themeText');
+        
+        // Set initial theme
+        updateThemeDisplay();
+
+        themeToggle.addEventListener('click', function() {
+            const currentTheme = sessionStorage.getItem('theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            sessionStorage.setItem('theme', newTheme);
+            document.body.className = newTheme;
+            updateThemeDisplay();
+        });
+
+        function updateThemeDisplay() {
+            const currentTheme = sessionStorage.getItem('theme');
+            themeText.textContent = currentTheme === 'light' ? 'Light Mode' : 'Dark Mode';
+            themeToggle.innerHTML = currentTheme === 'light' 
+                ? '<i class="fas fa-moon"></i><span>Dark Mode</span>'
+                : '<i class="fas fa-sun"></i><span>Light Mode</span>';
+        }
+    </script>
+</body>
+</html> 

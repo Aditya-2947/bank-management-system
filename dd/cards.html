@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cards - Indian Bank</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <script>
+        // Check if user is logged in
+        if (!sessionStorage.getItem('isLoggedIn')) {
+            window.location.href = 'login.html';
+        }
+
+        // Set initial theme
+        if (!sessionStorage.getItem('theme')) {
+            sessionStorage.setItem('theme', 'light');
+        }
+        document.body.className = sessionStorage.getItem('theme');
+    </script>
+    <div class="container">
+        <nav class="sidebar">
+            <div class="logo">
+                <i class="fas fa-university"></i>
+                <span>Indian Bank</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="accounts.html"><i class="fas fa-wallet"></i> Accounts</a></li>
+                <li><a href="#"><i class="fas fa-exchange-alt"></i> Transactions</a></li>
+                <li><a href="#"><i class="fas fa-money-bill-wave"></i> Transfer</a></li>
+                <li class="active"><a href="cards.html"><i class="fas fa-credit-card"></i> Cards</a></li>
+                <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <header>
+                <div class="header-content">
+                    <h1>Cards</h1>
+                    <div class="user-info">
+                        <div class="theme-switcher">
+                            <button id="themeToggle" class="theme-btn">
+                                <i class="fas fa-sun"></i>
+                                <span id="themeText">Light Mode</span>
+                            </button>
+                        </div>
+                        <div class="profile">
+                            <i class="fas fa-user-circle profile-icon"></i>
+                            <span>John Doe</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="cards-section">
+                <div class="add-card-section">
+                    <button id="addCardBtn" class="add-card-btn">
+                        <i class="fas fa-plus"></i> Add New Card
+                    </button>
+                </div>
+
+                <div id="addCardForm" class="add-card-form" style="display: none;">
+                    <h2>Add New Card</h2>
+                    <form id="newCardForm">
+                        <div class="form-group">
+                            <label for="cardNumber">Card Number (16 digits)</label>
+                            <input type="text" id="cardNumber" pattern="[0-9]{16}" maxlength="16" required 
+                                   oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                   placeholder="Enter 16-digit card number">
+                        </div>
+                        <div class="form-group">
+                            <label for="cardHolder">Card Holder Name</label>
+                            <input type="text" id="cardHolder" required 
+                                   oninput="this.value = this.value.toUpperCase()"
+                                   placeholder="Enter card holder name">
+                        </div>
+                        <div class="form-group">
+                            <label for="expiryMonth">Expiry Month</label>
+                            <select id="expiryMonth" required>
+                                <option value="">Select Month</option>
+                                <option value="01">01</option>
+                                <option value="02">02</option>
+                                <option value="03">03</option>
+                                <option value="04">04</option>
+                                <option value="05">05</option>
+                                <option value="06">06</option>
+                                <option value="07">07</option>
+                                <option value="08">08</option>
+                                <option value="09">09</option>
+                                <option value="10">10</option>
+                                <option value="11">11</option>
+                                <option value="12">12</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="expiryYear">Expiry Year</label>
+                            <select id="expiryYear" required>
+                                <option value="">Select Year</option>
+                                <option value="2024">2024</option>
+                                <option value="2025">2025</option>
+                                <option value="2026">2026</option>
+                                <option value="2027">2027</option>
+                                <option value="2028">2028</option>
+                                <option value="2029">2029</option>
+                                <option value="2030">2030</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="cvv">CVV (3 digits)</label>
+                            <input type="password" id="cvv" pattern="[0-9]{3}" maxlength="3" required
+                                   oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                   placeholder="Enter 3-digit CVV">
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="submit-btn">Add Card</button>
+                            <button type="button" class="cancel-btn" onclick="toggleAddCardForm()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="cardsList" class="cards-section">
+                    <!-- Cards will be added here dynamically -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Function to toggle the add card form
+        function toggleAddCardForm() {
+            const form = document.getElementById('addCardForm');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Add event listener to the Add Card button
+        document.getElementById('addCardBtn').addEventListener('click', toggleAddCardForm);
+
+        // Handle form submission
+        document.getElementById('newCardForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            // Get form values
+            const cardNumber = document.getElementById('cardNumber').value;
+            const cardHolder = document.getElementById('cardHolder').value;
+            const expiryMonth = document.getElementById('expiryMonth').value;
+            const expiryYear = document.getElementById('expiryYear').value;
+            const cvv = document.getElementById('cvv').value;
+
+            // Validate card number (Luhn algorithm)
+            if (!isValidCardNumber(cardNumber)) {
+                showNotification('Invalid Card', 'Please enter a valid card number');
+                return;
+            }
+
+            // Validate expiry date
+            if (!isValidExpiryDate(expiryMonth, expiryYear)) {
+                showNotification('Invalid Expiry Date', 'Card has expired or invalid date');
+                return;
+            }
+
+            // Create new card
+            const newCard = createCard(cardNumber, cardHolder, expiryMonth, expiryYear);
+            
+            // Add to cards list
+            document.getElementById('cardsList').appendChild(newCard);
+            
+            // Hide form and reset
+            toggleAddCardForm();
+            this.reset();
+
+            // Show success notification
+            showNotification('Card Added', 'New card has been added successfully');
+        });
+
+        // Function to validate card number using Luhn algorithm
+        function isValidCardNumber(cardNumber) {
+            let sum = 0;
+            let isEven = false;
+            
+            // Loop through values starting from the rightmost digit
+            for (let i = cardNumber.length - 1; i >= 0; i--) {
+                let digit = parseInt(cardNumber[i]);
+
+                if (isEven) {
+                    digit *= 2;
+                    if (digit > 9) {
+                        digit -= 9;
+                    }
+                }
+
+                sum += digit;
+                isEven = !isEven;
+            }
+
+            return (sum % 10) === 0;
+        }
+
+        // Function to validate expiry date
+        function isValidExpiryDate(month, year) {
+            const currentDate = new Date();
+            const currentYear = currentDate.getFullYear();
+            const currentMonth = currentDate.getMonth() + 1;
+
+            if (year < currentYear) return false;
+            if (year === currentYear && month < currentMonth) return false;
+            return true;
+        }
+
+        // Function to create card
+        function createCard(cardNumber, cardHolder, expiryMonth, expiryYear) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <div class="card-header">
+                    <h2>Credit Card</h2>
+                    <span class="card-number">****${cardNumber.slice(-4)}</span>
+                </div>
+                <div class="card-details">
+                    <div class="detail-item">
+                        <span>Card Holder</span>
+                        <span>${cardHolder}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span>Card Number</span>
+                        <span>**** **** **** ${cardNumber.slice(-4)}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span>Expiry Date</span>
+                        <span>${expiryMonth}/${expiryYear.slice(-2)}</span>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <button class="action-btn" onclick="blockCard(this)">
+                        <i class="fas fa-lock"></i> Block Card
+                    </button>
+                    <button class="action-btn" onclick="viewTransactions(this)">
+                        <i class="fas fa-history"></i> Transactions
+                    </button>
+                </div>
+            `;
+            return card;
+        }
+
+        // Function to block card
+        function blockCard(button) {
+            const card = button.closest('.card');
+            const cardNumber = card.querySelector('.card-number').textContent;
+            if (confirm(`Are you sure you want to block card ${cardNumber}?`)) {
+                card.style.opacity = '0.5';
+                button.disabled = true;
+                button.innerHTML = '<i class="fas fa-lock"></i> Blocked';
+                showNotification('Card Blocked', `Card ${cardNumber} has been blocked`);
+            }
+        }
+
+        // Function to view transactions
+        function viewTransactions(button) {
+            const card = button.closest('.card');
+            const cardNumber = card.querySelector('.card-number').textContent;
+            showNotification('Transactions', `Viewing transactions for card ${cardNumber}`);
+            // Add your transaction viewing logic here
+        }
+
+        // Function to show notifications
+        function showNotification(title, message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification-toast';
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <h3>${title}</h3>
+                    <p>${message}</p>
+                </div>
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Theme switcher functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const themeText = document.getElementById('themeText');
+        
+        function updateThemeDisplay() {
+            const isDark = document.body.classList.contains('dark');
+            themeText.textContent = isDark ? 'Dark Mode' : 'Light Mode';
+            themeToggle.querySelector('i').className = isDark ? 'fas fa-moon' : 'fas fa-sun';
+        }
+
+        themeToggle.addEventListener('click', function() {
+            document.body.classList.toggle('dark');
+            sessionStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+            updateThemeDisplay();
+        });
+
+        // Set initial theme display
+        updateThemeDisplay();
+    </script>
+</body>
+</html> 

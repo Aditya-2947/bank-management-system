@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Indian Bank</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <script>
+        // Check if user is logged in
+        if (!sessionStorage.getItem('isLoggedIn')) {
+            window.location.href = 'login.html';
+        }
+
+        // Set initial theme
+        if (!sessionStorage.getItem('theme')) {
+            sessionStorage.setItem('theme', 'light');
+        }
+        document.body.className = sessionStorage.getItem('theme');
+    </script>
+    <div class="container">
+        <nav class="sidebar">
+            <div class="logo">
+                <i class="fas fa-university"></i>
+                <span>Indian Bank</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="accounts.html"><i class="fas fa-wallet"></i> Accounts</a></li>
+                <li><a href="#"><i class="fas fa-exchange-alt"></i> Transactions</a></li>
+                <li><a href="#"><i class="fas fa-money-bill-wave"></i> Transfer</a></li>
+                <li><a href="cards.html"><i class="fas fa-credit-card"></i> Cards</a></li>
+                <li class="active"><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <header>
+                <div class="header-content">
+                    <h1>Settings</h1>
+                    <div class="user-info">
+                        <div class="theme-switcher">
+                            <button id="themeToggle" class="theme-btn">
+                                <i class="fas fa-sun"></i>
+                                <span id="themeText">Light Mode</span>
+                            </button>
+                        </div>
+                        <div class="profile">
+                            <i class="fas fa-user-circle profile-icon"></i>
+                            <span>John Doe</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="settings-section">
+                <div class="settings-card">
+                    <h2>Account Profile</h2>
+                    <form id="profileForm">
+                        <div class="form-group">
+                            <label for="fullName">Full Name</label>
+                            <input type="text" id="fullName" value="John Doe" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" value="john.doe@example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" value="+91 9876543210" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="address">Address</label>
+                            <textarea id="address" rows="3" required>123 Main Street, City, State, India</textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="submit-btn">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="settings-card">
+                    <h2>Security Settings</h2>
+                    <div class="security-options">
+                        <button class="action-btn" onclick="changePassword()">
+                            <i class="fas fa-key"></i> Change Password
+                        </button>
+                        <button class="action-btn" onclick="enable2FA()">
+                            <i class="fas fa-shield-alt"></i> Enable 2FA
+                        </button>
+                        <button class="action-btn" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Load user profile data from session storage
+        function loadUserProfile() {
+            const userProfile = JSON.parse(sessionStorage.getItem('userProfile') || '{}');
+            if (userProfile) {
+                document.getElementById('fullName').value = userProfile.fullName || 'John Doe';
+                document.getElementById('email').value = userProfile.email || 'john.doe@example.com';
+                document.getElementById('phone').value = userProfile.phone || '+91 9876543210';
+                document.getElementById('address').value = userProfile.address || '123 Main Street, City, State, India';
+            }
+        }
+
+        // Save user profile data to session storage
+        function saveUserProfile(profileData) {
+            sessionStorage.setItem('userProfile', JSON.stringify(profileData));
+        }
+
+        // Handle profile form submission
+        document.getElementById('profileForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const profileData = {
+                fullName: document.getElementById('fullName').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                address: document.getElementById('address').value
+            };
+
+            saveUserProfile(profileData);
+            showNotification('Profile Updated', 'Your profile has been updated successfully');
+        });
+
+        // Function to change password
+        function changePassword() {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <h2>Change Password</h2>
+                    <form id="changePasswordForm">
+                        <div class="form-group">
+                            <label for="currentPassword">Current Password</label>
+                            <input type="password" id="currentPassword" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="newPassword">New Password</label>
+                            <input type="password" id="newPassword" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm New Password</label>
+                            <input type="password" id="confirmPassword" required>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="submit-btn">Change Password</button>
+                            <button type="button" class="cancel-btn" onclick="closeModal()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.style.display = 'flex';
+
+            // Handle password change form submission
+            document.getElementById('changePasswordForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                const currentPassword = document.getElementById('currentPassword').value;
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+
+                // Validate current password (in a real app, this would check against stored password)
+                if (currentPassword !== 'password123') {
+                    showNotification('Error', 'Current password is incorrect');
+                    return;
+                }
+
+                if (newPassword !== confirmPassword) {
+                    showNotification('Error', 'New passwords do not match');
+                    return;
+                }
+
+                if (newPassword.length < 8) {
+                    showNotification('Error', 'Password must be at least 8 characters long');
+                    return;
+                }
+
+                // In a real app, this would update the password in the database
+                showNotification('Success', 'Password changed successfully');
+                closeModal();
+            });
+        }
+
+        // Function to enable 2FA
+        function enable2FA() {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <h2>Enable Two-Factor Authentication</h2>
+                    <p>Scan the QR code with your authenticator app to enable 2FA.</p>
+                    <div class="qr-code">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=IndianBank2FA" alt="2FA QR Code">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="submit-btn" onclick="confirm2FA()">Enable 2FA</button>
+                        <button type="button" class="cancel-btn" onclick="closeModal()">Cancel</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.style.display = 'flex';
+        }
+
+        // Function to confirm 2FA
+        function confirm2FA() {
+            showNotification('Success', 'Two-factor authentication has been enabled');
+            closeModal();
+        }
+
+        // Function to logout
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                // Clear all session data
+                sessionStorage.clear();
+                // Redirect to login page
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Function to close modal
+        function closeModal() {
+            const modal = document.querySelector('.modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        // Function to show notifications
+        function showNotification(title, message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification-toast';
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <h3>${title}</h3>
+                    <p>${message}</p>
+                </div>
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Theme switcher functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const themeText = document.getElementById('themeText');
+        
+        function updateThemeDisplay() {
+            const isDark = document.body.classList.contains('dark');
+            themeText.textContent = isDark ? 'Dark Mode' : 'Light Mode';
+            themeToggle.querySelector('i').className = isDark ? 'fas fa-moon' : 'fas fa-sun';
+        }
+
+        themeToggle.addEventListener('click', function() {
+            document.body.classList.toggle('dark');
+            sessionStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+            updateThemeDisplay();
+        });
+
+        // Load user profile when page loads
+        loadUserProfile();
+
+        // Set initial theme display
+        updateThemeDisplay();
+    </script>
+</body>
+</html> 

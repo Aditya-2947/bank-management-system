@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Indian Bank</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <script>
+        // Check if user is logged in
+        if (!sessionStorage.getItem('isLoggedIn')) {
+            window.location.href = 'login.html';
+        }
+
+        // Set initial theme
+        if (!sessionStorage.getItem('theme')) {
+            sessionStorage.setItem('theme', 'light');
+        }
+        document.body.className = sessionStorage.getItem('theme');
+    </script>
+    <div class="container">
+        <nav class="sidebar">
+            <div class="logo">
+                <i class="fas fa-university"></i>
+                <span>Indian Bank</span>
+            </div>
+            <ul class="nav-links">
+                <li class="active"><a href="index.html"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="accounts.html"><i class="fas fa-wallet"></i> Accounts</a></li>
+                <li><a href="#"><i class="fas fa-exchange-alt"></i> Transactions</a></li>
+                <li><a href="#"><i class="fas fa-money-bill-wave"></i> Transfer</a></li>
+                <li><a href="#"><i class="fas fa-credit-card"></i> Cards</a></li>
+                <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <header>
+                <div class="header-content">
+                    <h1>Welcome, Pranav</h1>
+                    <div class="user-info">
+                        <div class="theme-switcher">
+                            <button id="themeToggle" class="theme-btn">
+                                <i class="fas fa-sun"></i>
+                                <span id="themeText">Light Mode</span>
+                            </button>
+                        </div>
+                        <i class="fas fa-bell"></i>
+                        <div class="profile">
+                            <div class="profile-icon">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <span>Pranav</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="dashboard">
+                <div class="account-card">
+                    <div class="account-header">
+                        <h2>Savings Account</h2>
+                        <span class="account-number">****1234</span>
+                    </div>
+                    <div class="account-balance">
+                        <h3>Available Balance</h3>
+                        <h1>₹15,000.00</h1>
+                    </div>
+                    <div class="account-details">
+                        <div class="detail-item">
+                            <span>Account Type</span>
+                            <span>Savings</span>
+                        </div>
+                        <div class="detail-item">
+                            <span>Interest Rate</span>
+                            <span>3.5% p.a.</span>
+                        </div>
+                        <div class="detail-item">
+                            <span>Last Updated</span>
+                            <span>Today</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="account-card">
+                    <div class="account-header">
+                        <h2>Checking Account</h2>
+                        <span class="account-number">****5678</span>
+                    </div>
+                    <div class="account-balance">
+                        <h3>Available Balance</h3>
+                        <h1>₹10,000.00</h1>
+                    </div>
+                    <div class="account-details">
+                        <div class="detail-item">
+                            <span>Account Type</span>
+                            <span>Checking</span>
+                        </div>
+                        <div class="detail-item">
+                            <span>Monthly Fee</span>
+                            <span>₹0</span>
+                        </div>
+                        <div class="detail-item">
+                            <span>Last Updated</span>
+                            <span>Today</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quick-actions">
+                    <h2>Quick Actions</h2>
+                    <div class="action-buttons">
+                        <button class="action-btn"><i class="fas fa-exchange-alt"></i> Transfer</button>
+                        <button class="action-btn"><i class="fas fa-money-bill-wave"></i> Deposit</button>
+                        <button class="action-btn"><i class="fas fa-credit-card"></i> Pay Bills</button>
+                        <button class="action-btn"><i class="fas fa-history"></i> History</button>
+                    </div>
+                </div>
+
+                <div class="recent-transactions">
+                    <h2>Recent Transactions</h2>
+                    <div class="transaction-list">
+                        <!-- Transactions will be added here dynamically -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html> 
